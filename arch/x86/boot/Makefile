@@ -4,7 +4,7 @@ all: kernel-boot.o
 clean:
 	rm *.o
 
-kernel-boot.o: boot.o init.o
+kernel-boot.o: boot.o
 	$(LD) $(LDFLAGS) -r -o $@ $+
 
 %.o: %.c

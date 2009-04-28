@@ -1,6 +1,11 @@
 #ifndef _PAGE_H
 #define _PAGE_H
 
+// base virtual address to kernel pages (mapped to physical address 0x00000000) 
+#define KERNEL_BASE 0xC0000000
+
+#ifndef __ASM__
+
 extern pde_t page_dir[1024];
 
 typedef struct pde {
@@ -52,5 +57,7 @@ typedef struct pte {
   unsigned int writable:1;
   unsigned int present:1;
 } pte_t;
+
+#endif /* __ASM__ */
 
 #endif /* _PAGE_H */
