@@ -3,6 +3,7 @@ all: kernel-x86
 CFLAGS += -m32
 LDFLAGS += -melf_i386
 
+init-o += arch/x86/init/
 core-o += arch/x86/core/
 
 src-dirs += arch/x86/boot/

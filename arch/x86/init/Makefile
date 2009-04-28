@@ -1,10 +1,10 @@
 .PHONY: all clean
 
-all: kernel-boot.o
+all: all.o
 clean:
 	rm *.o
 
-kernel-boot.o: boot.o
+all.o: start.o init.o
 	$(LD) $(LDFLAGS) -r -o $@ $+
 
 %.o: %.c

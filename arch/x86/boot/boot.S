@@ -1,42 +1,33 @@
-#include "boot.h"
-
+#define __ASM__
+#include <mem/page.h>
+#include "multiboot.h"
+    
     .text
-    .code32
-    .globl      _start
+    .global _start
 _start:
-    jmp         entry
+    jmp start
 
-    .align      4
+    .align 4
 mboot:
-    .long       MULTIBOOT_MAGIC
-    .long       MULTIBOOT_FLAGS
-    .long       MULTIBOOT_CHECKSUM
+    .long MULTIBOOT_HEADER_MAGIC
+    .long MULTIBOOT_HEADER_FLAGS
+    .long MULTIBOOT_HEADER_CHECKSUM
 
-    .long       mboot
-    .long       _start
-    .long       _edata
-    .long       _end
-    .long       _start
+    .long (mboot-KERNEL_BASE)
+    .long (_start-KERNEL_BASE)
+    .long (_edata-KERNEL_BASE)
+    .long (_end-KERNEL_BASE)
+    .long (_start-KERNEL_BASE)
 
-    .code32
-entry:
-    // setup stack
-    movl        $(stack+STACK_SIZE), %esp
+start:
+    /* note that until paging is set up, every pointer must have KERNEL_BASE
+    subtracted from it (remember short jumps don't need this) */
 
-    // reset eflags
-    pushl $0
-    popf
+    /*sub MULTIBOOT_MAGIC, %eax
+    jnz non_multiboot*/
 
-    // do i386 initialization using info given by multiboot
-    pushl       %ebx
-    pushl       %eax
-    call        multiboot_init
+    mov %ebx, %eax
+    jmp kernel_start
 
-    // jump to machine-independent main function
-    call        main
-
+non_multiboot:
     hlt
-
-    .comm       stack, STACK_SIZE
-stack_end:
-        

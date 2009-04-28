@@ -1,7 +1,22 @@
 #ifndef _MULTIBOOT_H
 #define _MULTIBOOT_H
 
-#define MULTIBOOT_EAX_MAGIC 0x2BADB002
+#define MULTIBOOT_HEADER_ALIGN_PAGE 1<<0
+#define MULTIBOOT_HEADER_MEM_INFO 1<<1
+#define MULTIBOOT_HEADER_VIDEO_INFO 1<<2
+#define MULTIBOOT_HEADER_INTERNAL_RELOC 1<<16
+
+#define MULTIBOOT_HEADER_MAGIC 0x1BADB002
+#define MULTIBOOT_HEADER_FLAGS (MULTIBOOT_HEADER_ALIGN_PAGE | \
+                                MULTIBOOT_HEADER_MEM_INFO | \
+                                MULTIBOOT_HEADER_INTERNAL_RELOC)
+#define MULTIBOOT_HEADER_CHECKSUM -(MULTIBOOT_HEADER_MAGIC + \
+                                    MULTIBOOT_HEADER_FLAGS)
+
+
+#define MULTIBOOT_MAGIC 0x2BADB002
+
+#ifndef __ASM__
 
 typedef struct module_info {
   unsigned long mod_start;
@@ -79,6 +94,8 @@ typedef struct multiboot_info {
   unsigned long vbe_interface_seg;
   unsigned long vbe_interface_off;
   unsigned long vbe_interface_len;
-} multiboot_info_t;  
+} multiboot_info_t;
+
+#endif /* __ASM__ */
 
 #endif /* _MULTIBOOT_H */
