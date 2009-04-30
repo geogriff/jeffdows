@@ -108,7 +108,7 @@ boot_gdtd:
     .global boot_gdt
     .align 8                    // align on 8-byte boundary for best performance
 boot_gdt:
-    .fill BOOT_CS_INDEX, 8      // make null descriptors leading up to BOOT_CS
+    .fill BOOT_CS_IDX, 8      // make null descriptors leading up to BOOT_CS
     // kernel code segment, base 0, limit 4GB, DPL 0
     .long 0b00000000000000001111111111111111
     .long 0b00000000110011111001101000000000

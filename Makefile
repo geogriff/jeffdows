@@ -6,7 +6,8 @@ ARCH ?= $(shell uname -m | sed -e s/i.86/x86/)
 CC ?= gcc
 LD ?= ld
 
-CFLAGS += -ggdb -nostdlib -nostdinc -I$(SRCDIR) -I$(SRCDIR)/arch/$(ARCH)
+CFLAGS += -ggdb -nostdlib -nostdinc -I$(SRCDIR) -I$(SRCDIR)/include
+CFLAGS += -I$(SRCDIR)/arch/$(ARCH) -I$(SRCDIR)/arch/$(ARCH)/include
 LDFLAGS += -g
 
 export CC LD
