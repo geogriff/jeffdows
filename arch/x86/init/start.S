@@ -88,12 +88,6 @@ kernel_real_start:
 
     .data
 
-    // page directory - should probably be moved to .bss and zeroed on boot
-    .global page_dir
-    .align 4096
-page_dir:
-    .skip 1024
-
     /* boot gdt pseudo-descriptor - address must be congruent to 2 mod 4
     so that we get an aligned word, then an aligned double word. */
     .global boot_gdtd
@@ -116,6 +110,10 @@ boot_gdt:
     .long 0b00000000000000001111111111111111
     .long 0b00000000110011111001001000000000
 boot_gdt_end:
+
+    // page directory
+    .global page_dir
+    .comm page_dir, 1024, 4096  // 3rd argument is alignment, only used on ELF
 
     // boot stack
     .comm stack, BOOT_STACK_SIZE
