@@ -13,7 +13,6 @@ SECTIONS
     *(.rodata)
     _etext = .;
     __etext = .;
-    . = ALIGN(4096);
   }
   .data : AT (phys + (_data - _text))
   {
@@ -21,14 +20,12 @@ SECTIONS
     *(.data)
     _edata = .;
     __edata = .;
-    . = ALIGN(4096);
   }
   .bss : AT(phys + (_bss - _text))
   {
     _bss = .;
     *(.bss)
     *(COMMON)
-    . = ALIGN(4096);
     _end = .;
     __end = .;
   }
