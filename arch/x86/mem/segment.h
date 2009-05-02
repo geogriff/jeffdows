@@ -11,6 +11,7 @@
 #define BOOT_CS (BOOT_CS_IDX*8)
 #define BOOT_DS (BOOT_DS_IDX*8)
 
+// real GDT indices
 #define NULL_SEG_IDX    0
 #define KERNEL_CS_IDX   1
 #define KERNEL_DS_IDX   2
@@ -25,19 +26,23 @@
 
 #ifndef __ASM__
 
+/* IMPORTANT!! the ordering of these bits in each byte is a compiler choice!
+   currently, these structs are written the gcc way, which is least significant
+   bit first (on little endian machines). note that byte ordering is the same */
+
 typedef struct segment_descriptor {
-  unsigned limit_low:16;
-  unsigned base_low:24;
-  unsigned type:5;
-  unsigned dpl:2;
-  unsigned present:1;
-  unsigned limit_high:4;
+  unsigned limit_low:16;        // segment limit (low 16 bits)
+  unsigned base_low:24;         // segment base address (low 24 bits)
+  unsigned type:5;              // descriptor type
+  unsigned dpl:2;               // descriptor privilege level
+  unsigned present:1;           // segment present in memory
+  unsigned limit_high:4;        // segment limit (high 4 bits)
   unsigned :1;                  // unused
-  unsigned reserved:1;          // should be set to zero
+  unsigned reserved:1;          // reserved (should be 0)
   unsigned big:1;               // this is usage in DS, usage in CS is "default"
-  unsigned granularity:1;
-  unsigned base_high:8;
-} __packed__ segment_descriptor_t;
+  unsigned granularity:1;       // 4kb granularity for segment limit
+  unsigned base_high:8;         // segment base address (high 8 bits)
+} PACK segment_descriptor_t;
 
 // descriptor types
 #define SDT_NULL            0b00000
@@ -72,20 +77,20 @@ typedef struct segment_descriptor {
 #define SDT_CODE_CRA        0b11111
 
 typedef struct gate_descriptor {
-  unsigned off_low:16;
-  unsigned segment:16;
-  unsigned param_count:5;
-  unsigned reserved:3;          // should be set to zero
-  unsigned type:5;
-  unsigned dpl:2;
-  unsigned present:1;
-  unsigned off_high:16;
-} __packed__ gate_descriptor_t;
+  unsigned off_low:16;          // gate segment offset (low 16 bits)
+  unsigned segment:16;          // gate segment number
+  unsigned param_count:5;       // number of word-sized parameters of gate
+  unsigned reserved:3;          // reserved (should be 0)
+  unsigned type:5;              // descriptor type
+  unsigned dpl:2;               // descriptor privelege level
+  unsigned present:1;           // gate present in memory
+  unsigned off_high:16;         // segment offset of gate (high 16 bits)
+} PACK gate_descriptor_t;
 
 typedef struct pseudo_segment_descriptor {
-  unsigned short limit;
-  unsigned long base;
-} __packed__ pseudo_segment_descriptor_t;
+  unsigned short limit;         // descriptor limit
+  unsigned long base;           // descriptor base address
+} PACK pseudo_segment_descriptor_t;
 
 #endif /* __ASM__ */
 

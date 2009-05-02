@@ -1,9 +1,10 @@
 #include <core/printf.h>
 #include <mem/segment.h>
+#include <mem/page.h>
 #include <mem/asm.h>
 #include "init.h"
 
-segment_descriptor_t gdt[] = {
+segment_descriptor_t gdt[] ALIGN(8) = {
   { // null descriptor
     0x0000,     // low 16 bits of segment limit
     0x000000,   // low 24 bits of segment base address
@@ -67,9 +68,41 @@ segment_descriptor_t gdt[] = {
 };
 
 void init_x86(boot_info_t *boot_info) {
+  // set up gdt
   pseudo_segment_descriptor_t gdtd = {
     (sizeof(gdt) - 1),
     (unsigned) &gdt
   };
   set_gdt(&gdtd);
+
+  // set up nonpresent user pages in page dir
+  pde_nonpresent_t nonpresent_page = {
+    0       // present
+  };
+  for (int i = 0; i < (KERNEL_BASE>>22); i++)
+    page_dir[i].nonpresent = nonpresent_page;
+
+  // set up 4mb kernel code pages in page dir
+  pde_bigpage_t kernel_page = {
+    1,      // present
+    1,      // writable
+    0,      // user
+    0,      // write_through
+    0,      // cache_disable
+    0,      // accessed
+    0,      // dirty
+    1,      // bigpage
+    1,      // global
+    0,      // pat
+    0,      // reserved
+    0       // base_addr
+  };
+  for (; kernel_page.base_addr <= (((unsigned int) &_end) - KERNEL_BASE) >> 22;
+       kernel_page.base_addr++)
+    page_dir[kernel_page.base_addr + (KERNEL_BASE>>22)].bigpage = kernel_page;
+
+  // clear rest of kernel pages
+  for (int i = (((unsigned int) &_end) >> 22) + 1; 
+       i < 1024; i++)
+    page_dir[i].nonpresent = nonpresent_page;
 }
