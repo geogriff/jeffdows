@@ -9,6 +9,6 @@ core-o += arch/x86/core/ arch/x86/mem/
 src-dirs += arch/x86/boot/
 
 kernel-x86: arch/x86/link.ld arch/x86/boot/kernel-boot.o kernel.o
-	$(LD) $(LDFLAGS) -o $@ $+
+	$(LD) $(LDFLAGS) -T arch/x86/link.ld -o $@ $+
 
 arch/x86/boot/kernel-boot.o: arch/x86/boot/ ;
