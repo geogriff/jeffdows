@@ -4,7 +4,7 @@ all: all.o
 clean:
 	rm *.o
 
-all.o: start.o init.o
+all.o: start.o init.o asm.o interrupt.o
 	$(LD) $(LDFLAGS) -r -o $@ $+
 
 %.o: %.c

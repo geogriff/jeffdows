@@ -87,6 +87,19 @@ typedef struct gate_descriptor {
   unsigned off_high:16;         // segment offset of gate (high 16 bits)
 } PACK gate_descriptor_t;
 
+typedef struct nonpresent_descriptor {
+  unsigned :32;
+  unsigned :15;
+  unsigned present:1;
+  unsigned :16;
+} nonpresent_descriptor_t;
+
+typedef union descriptor {
+  segment_descriptor_t segment;
+  gate_descriptor_t gate;
+  nonpresent_descriptor_t nonpresent;
+} descriptor_t;
+
 typedef struct pseudo_segment_descriptor {
   unsigned short limit;         // descriptor limit
   unsigned long base;           // descriptor base address

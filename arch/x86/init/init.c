@@ -1,7 +1,8 @@
 #include <core/printf.h>
 #include <mem/segment.h>
 #include <mem/page.h>
-#include <mem/asm.h>
+#include <init/asm.h>
+#include <init/interrupt.h>
 #include "init.h"
 
 segment_descriptor_t gdt[] ALIGN(8) = {
@@ -105,4 +106,6 @@ void init_x86(boot_info_t *boot_info) {
   for (int i = (((unsigned int) &_end) >> 22) + 1; 
        i < 1024; i++)
     page_dir[i].nonpresent = nonpresent_page;
+
+  init_interrupts();
 }

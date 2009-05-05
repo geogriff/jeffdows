@@ -22,3 +22,13 @@ set_gdt:
     ljmp $KERNEL_CS, $set_gdt_cs
 set_gdt_cs:
     ret
+
+// void set_idt(pseudo_segment_descriptor_t *idtd)
+    .global set_idt
+set_idt:
+    .type set_idt, STT_FUNC
+
+    mov 4(%esp), %eax
+    lidt (%eax)
+
+    ret
