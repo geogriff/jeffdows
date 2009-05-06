@@ -6,7 +6,7 @@ descriptor_t idt[IDT_SIZE];
 
 void init_interrupts() {
   nonpresent_descriptor_t nonpresent_gate = {
-    0
+    .present = 0
   };
   for (int i = 0; i < IDT_SIZE; i++)
     idt[i].nonpresent = nonpresent_gate;
