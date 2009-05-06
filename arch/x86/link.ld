@@ -1,35 +1,29 @@
 OUTPUT_FORMAT("elf32-i386")
 ENTRY(_start)
-phys = 0x00100000;
-virt = 0xC0100000;
+
+__load_addr = 0x00100000;
+__virt = 0xC0000000;
 
 SECTIONS
 {
-  .text virt : AT(phys)
+  . = __virt + __load_addr;
+  .text : AT(ADDR(.text) - __virt)
   {
-    _begin = .;
-    _text = .;
     *(.text)
     *(.rodata)
     _etext = .;
-    __etext = .;
-    . = ALIGN(4096);
   }
-  .data : AT (phys + (_data - _text))
+
+  .data : AT(ADDR(.data) - __virt)
   {
-    _data = .;
     *(.data)
     _edata = .;
-    __edata = .;
-    . = ALIGN(4096);
   }
-  .bss : AT(phys + (_bss - _text))
+
+  .bss : AT(ADDR(.bss) - __virt)
   {
-    _bss = .;
     *(.bss)
     *(COMMON)
-    . = ALIGN(4096);
     _end = .;
-    __end = .;
   }
 }

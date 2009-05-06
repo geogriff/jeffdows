@@ -27,7 +27,7 @@ kernel_start:
     // initialize identity 4MB pages in page dir
     mov $(((0x00000000 >> 22) << 22) + \
           (BOOT_PDE_FLAGS)), %eax               // initial pde value
-    mov $(boot_page_dir_base-KERNEL_BASE), %edi // pointer to first pde
+    mov $(page_dir-KERNEL_BASE), %edi      // pointer to first pde
     mov $(_end-KERNEL_BASE), %ecx               // calculate number of pages
     shr $22, %ecx
     inc %ecx            /* this might cause an extra 4MB page to be mapped if
@@ -40,7 +40,7 @@ identity_bigpage_init_loop:
     // initialize kernel 4MB pages in page dir
     mov $(((0x00000000 >> 22) << 22) + \
          (BOOT_PDE_FLAGS)), %eax                // initial pde value
-    mov $((boot_page_dir_base-KERNEL_BASE) + \
+    mov $((page_dir-KERNEL_BASE) + \
           ((KERNEL_BASE >> 22) << 2)), %edi     // pointer to first pde
     mov $(_end-KERNEL_BASE), %ecx
     shr $22, %ecx                               // calulate number of pages
@@ -56,7 +56,7 @@ kernel_bigpage_init_loop:
     mov %eax, %cr4
 
     // set page dir (bits 12-31 in cr3)
-    mov $(boot_page_dir_base-KERNEL_BASE), %eax
+    mov $(page_dir-KERNEL_BASE), %eax
     mov %eax, %cr3
 
     // enable paging (PE bit 31 in cr0)
@@ -88,12 +88,6 @@ kernel_real_start:
 
     .data
 
-    // boot page directory - should probably be moved to .bss and zeroed on boot
-    .global boot_page_dir_base
-    .align 4096
-boot_page_dir_base:
-    .skip 1024
-
     /* boot gdt pseudo-descriptor - address must be congruent to 2 mod 4
     so that we get an aligned word, then an aligned double word. */
     .global boot_gdtd
@@ -108,7 +102,7 @@ boot_gdtd:
     .global boot_gdt
     .align 8                    // align on 8-byte boundary for best performance
 boot_gdt:
-    .fill BOOT_CS_INDEX, 8      // make null descriptors leading up to BOOT_CS
+    .fill BOOT_CS_IDX, 8      // make null descriptors leading up to BOOT_CS
     // kernel code segment, base 0, limit 4GB, DPL 0
     .long 0b00000000000000001111111111111111
     .long 0b00000000110011111001101000000000
@@ -116,6 +110,10 @@ boot_gdt:
     .long 0b00000000000000001111111111111111
     .long 0b00000000110011111001001000000000
 boot_gdt_end:
+
+    // page directory
+    .global page_dir
+    .comm page_dir, 1024, 4096  // 3rd argument is alignment, only used on ELF
 
     // boot stack
     .comm stack, BOOT_STACK_SIZE
