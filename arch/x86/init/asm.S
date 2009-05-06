@@ -32,3 +32,21 @@ set_idt:
     lidt (%eax)
 
     ret
+
+// void enable_interrupts()
+    .global enable_interrupts
+enable_interrupts:
+    .type enable_interrupts, STT_FUNC
+
+    sti
+
+    ret
+
+// void disable_interrupts()
+    .global disable_interrupts
+disable_interrupts:
+    .type disable_interrupts, STT_FUNC
+
+    cli
+
+    ret
