@@ -25,4 +25,6 @@ typedef enum interrupt_vector {
 
 #define IDT_SIZE (INT_EXTERNAL_LAST+1)
 
+void init_interrupts();
+
 #endif /* _INTERRUPT_H */
