@@ -21,6 +21,7 @@
 #define INT_MACHINE_CHECK 18
 #define INT_SIMD_FAULT 19
 #define INT_EXTERNAL 32
+#define INT_SYSCALL 32
 #define INT_LAST 25
 #else
 typedef enum interrupt_vector {
@@ -43,6 +44,7 @@ typedef enum interrupt_vector {
   INT_MACHINE_CHECK = 18,
   INT_SIMD_FAULT = 19,
   INT_EXTERNAL = 32,
+  INT_SYSCALL = 32,
   INT_LAST = 255
 } interrupt_vector_t;
 #endif /* __ASM__ */

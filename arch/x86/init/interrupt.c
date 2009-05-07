@@ -32,7 +32,7 @@ void init_interrupts() {
   for (interrupt_vector_t v = INT_FIRST; v <= INT_LAST; v++)
     clear_isr(v);
 
-  // setup traps
+  // setup processor traps
   set_isr(INT_DIVIDE_ERROR, SDT_TRAP_GATE_32, &trap_divide_error_entry);
   set_isr(INT_NMI, SDT_TRAP_GATE_32, &trap_nmi_entry);
   set_isr(INT_BREAKPOINT, SDT_TRAP_GATE_32, &trap_breakpoint_entry);
@@ -50,6 +50,9 @@ void init_interrupts() {
   set_isr(INT_ALIGN_CHECK, SDT_TRAP_GATE_32, &trap_align_check_entry);
   //set_isr(INT_MACHINE_CHECK, SDT_TRAP_GATE_32, &isr_machine_check_entry);
   //set_isr(INT_SIMD_FAULT, SDT_TRAP_GATE_32, &isr_simd_fault_entry);
+
+  // setup syscall trap
+  set_isr(INT_SYSCALL, SDT_TRAP_GATE_32, &syscall_handler_entry);
 
   pseudo_segment_descriptor_t idtd = {
     (sizeof(idt) - 1),

@@ -134,3 +134,42 @@ trap_handler_entry:
     pop %gs
 
     iret
+
+    .global syscall_handler_entry
+syscall_handler_entry:
+    .type syscall_handler_entry, STT_FUNC
+    // set up trapped_state struct
+    push %gs
+    push %fs
+    push %es
+    push %ds
+    push %edi
+    push %esi
+    push %ebp
+    push %edx
+    push %ecx
+    push %ebx
+    push %eax
+    /* push pointer to our struct, so compiler doesn't optimize out the changes
+       to the struct in trap_handler */
+    push %esp
+
+    // call generic trap handler
+    call syscall_handler
+
+    // trapped_state struct pointer from stack
+    add $4, %esp
+    // restore machine state to our trapped_state struct
+    pop %eax
+    pop %ebx
+    pop %ecx
+    pop %edx
+    pop %ebp
+    pop %esi
+    pop %edi
+    pop %ds
+    pop %es
+    pop %fs
+    pop %gs
+
+    iret

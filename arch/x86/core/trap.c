@@ -10,3 +10,7 @@ void trap_handler(interrupt_vector_t vector, trap_error_code_t error,
     // fix the problem, kill kernel, etc..
   }
 }
+
+void syscall_handler(trapped_state_t *state) {
+  // handle syscall...
+}

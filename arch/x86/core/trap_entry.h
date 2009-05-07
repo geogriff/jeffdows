@@ -17,4 +17,6 @@ void trap_page_fault_entry();
 void trap_math_fault_entry();
 void trap_align_check_entry();
 
+void syscall_handler_entry();
+
 #endif /* _TRAP_ENTRY_H */
