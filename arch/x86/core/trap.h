@@ -3,6 +3,7 @@
 
 #include <interrupt.h>
 
-void trap(interrupt_vector_t vector);
+void trap_handler(interrupt_vector_t vector, trap_error_code_t error, 
+                  trapped_state_t state);
 
 #endif /* _TRAP_H */

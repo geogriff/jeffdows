@@ -51,6 +51,35 @@ typedef enum interrupt_vector {
 
 #define IDT_SIZE (INT_LAST+1)
 
+typedef struct trapped_state {
+  long eax;
+  long ebx;
+  long ecx;
+  long edx;
+  long ebp;
+  long esi;
+  long edi;
+  long ds;
+  long es;
+  long fs;
+  long gs;
+  // members provided by cpu always
+  long eip;
+  long cs;
+  long eflags;
+  // members provided by cpu only on mode switch
+  long esp;
+  long ss;
+} trapped_state_t;
+
+typedef struct trap_error_code {
+  unsigned external:1;      // external event caused this interrupt
+  unsigned idt:1;           // segment is in the idt
+  unsigned local:1;         // segment is in an ldt
+  unsigned segment_idx:13;  // segment index
+  unsigned :16;             // reserved
+} trap_error_code_t;
+
 typedef void *isr_entry_t;
 
 #endif /* __ASM__ */
