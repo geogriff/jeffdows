@@ -102,21 +102,25 @@ trap_handler_entry:
     push %ecx
     push %ebx
     push %eax
+    /* push pointer to our struct, so compiler doesn't optimize out the changes
+       to the struct in trap_handler */
+    push %esp
     // get error code, replace with gs, push error code in front
-    mov 40(%esp), %eax
-    mov %gs, 40(%esp)
+    mov 44(%esp), %eax
+    mov %gs, 44(%esp)
     push %eax
     // get interrupt vector, replace with fs, push vector in front
-    mov 40(%esp), %eax
-    mov %fs, 40(%esp)
+    mov 44(%esp), %eax
+    mov %fs, 44(%esp)
     push %eax
 
     // call generic trap handler
     call trap_handler
 
-    // remove interrupt vector and error code from stack
-    add $8, %esp
-    // restore machine state to trapped_state struct
+    /* remove interrupt vector, error code, and trapped_state struct pointer
+       from stack */
+    add $12, %esp
+    // restore machine state to our trapped_state struct
     pop %eax
     pop %ebx
     pop %ecx
