@@ -1,6 +1,7 @@
+#include <mem/page.h>
 #include "printf.h"
 
-#define VGA_BASE 0xB8000
+#define VGA_BASE (KERNEL_BASE+0xB8000)
 
 static const int vga_rows=25, vga_cols=80;
 static int vga_ypos=0, vga_xpos=0;
