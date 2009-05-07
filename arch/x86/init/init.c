@@ -2,6 +2,7 @@
 #include <mem/segment.h>
 #include <mem/page.h>
 #include <init/asm.h>
+#include <init/interrupt.h>
 #include <interrupt.h>
 #include "init.h"
 
