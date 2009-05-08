@@ -32,43 +32,48 @@
 
 // descriptor types
 typedef enum descriptor_type {
-  SDT_NULL = 0b00000,
-  SDT_TSS_AVAIL_16 = 0b00001,
-  SDT_LDT = 0b00010,
-  SDT_TSS_BUSY_16 = 0b00011,
-  SDT_CALL_GATE_16 = 0b00100,
-  SDT_TASK_GATE = 0b00101,
-  SDT_INT_GATE_16 = 0b00110,
-  SDT_TRAP_GATE_16 = 0b00111,
-  SDT_TSS_AVAIL_32 = 0b01001,
-  SDT_TSS_BUSY_32 = 0b01011,
-  SDT_CALL_GATE_32 = 0b01100,
-  SDT_INT_32 = 0b01110,
-  SDT_TRAP_GATE_32 = 0b01111,
+  DT_NULL = 0b00000,
+  DT_TSS_AVAIL_16 = 0b00001,
+  DT_LDT = 0b00010,
+  DT_TSS_BUSY_16 = 0b00011,
+  DT_CALL_GATE_16 = 0b00100,
+  DT_TASK_GATE = 0b00101,
+  DT_INT_GATE_16 = 0b00110,
+  DT_TRAP_GATE_16 = 0b00111,
+  DT_TSS_AVAIL_32 = 0b01001,
+  DT_TSS_BUSY_32 = 0b01011,
+  DT_CALL_GATE_32 = 0b01100,
+  DT_INT_32 = 0b01110,
+  DT_TRAP_GATE_32 = 0b01111,
 
-  SDT_DATA = 0b10000,
-  SDT_DATA_A = 0b10001,
-  SDT_DATA_W = 0b10010,
-  SDT_DATA_WA = 0b10011,
-  SDT_DATA_E = 0b10100,
-  SDT_DATA_EA = 0b10101,
-  SDT_DATA_EW = 0b10110,
-  SDT_DATA_EWA = 0b10111,
-  SDT_CODE = 0b11000,
-  SDT_CODE_A = 0b11001,
-  SDT_CODE_R = 0b11010,
-  SDT_CODE_RA = 0b11011,
-  SDT_CODE_C = 0b11100,
-  SDT_CODE_CA = 0b11101,
-  SDT_CODE_CR = 0b11110,
-  SDT_CODE_CRA = 0b11111
+  DT_DATA = 0b10000,
+  DT_DATA_A = 0b10001,
+  DT_DATA_W = 0b10010,
+  DT_DATA_WA = 0b10011,
+  DT_DATA_E = 0b10100,
+  DT_DATA_EA = 0b10101,
+  DT_DATA_EW = 0b10110,
+  DT_DATA_EWA = 0b10111,
+  DT_CODE = 0b11000,
+  DT_CODE_A = 0b11001,
+  DT_CODE_R = 0b11010,
+  DT_CODE_RA = 0b11011,
+  DT_CODE_C = 0b11100,
+  DT_CODE_CA = 0b11101,
+  DT_CODE_CR = 0b11110,
+  DT_CODE_CRA = 0b11111
 } descriptor_type_t;
+
+typedef enum dpl {
+  DPL_KERNEL = 0,
+  DPL_USER = 3
+} dpl_t;
 
 typedef struct segment_descriptor {
   unsigned limit_low:16;        // segment limit (low 16 bits)
   unsigned base_low:24;         // segment base address (low 24 bits)
   descriptor_type_t type:5;     // descriptor type
-  unsigned dpl:2;               // descriptor privilege level
+  dpl_t dpl:2;                  // descriptor privilege level
   unsigned present:1;           // segment present in memory
   unsigned limit_high:4;        // segment limit (high 4 bits)
   unsigned :1;                  // unused
@@ -84,7 +89,7 @@ typedef struct gate_descriptor {
   unsigned param_count:5;       // number of word-sized parameters of gate
   unsigned reserved:3;          // reserved (should be 0)
   descriptor_type_t type:5;     // descriptor type
-  unsigned dpl:2;               // descriptor privelege level
+  dpl_t dpl:2;                  // descriptor privelege level
   unsigned present:1;           // gate present in memory
   unsigned off_high:16;         // segment offset of gate (high 16 bits)
 } PACK gate_descriptor_t;
