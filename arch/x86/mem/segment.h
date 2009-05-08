@@ -99,7 +99,7 @@ typedef struct nonpresent_descriptor {
   unsigned :15;
   unsigned present:1;
   unsigned :16;
-} nonpresent_descriptor_t;
+} PACK nonpresent_descriptor_t;
 
 typedef union descriptor {
   segment_descriptor_t segment;
