@@ -4,7 +4,7 @@ CFLAGS += -m32
 LDFLAGS += -melf_i386
 
 init-o += arch/x86/init/
-core-o += arch/x86/core/ arch/x86/mem/
+core-o += arch/x86/core/
 
 src-dirs += arch/x86/boot/
 

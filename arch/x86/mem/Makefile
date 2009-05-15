@@ -1,10 +1,10 @@
 .PHONY: all clean
 
-all: all.o
+all: 
 clean:
 	rm *.o
 
-all.o: asm.o
+all.o: 
 	$(LD) $(LDFLAGS) -r -o $@ $+
 
 %.o: %.c

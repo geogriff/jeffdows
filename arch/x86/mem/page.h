@@ -1,6 +1,8 @@
 #ifndef _PAGE_H
 #define _PAGE_H
 
+#include <mem/segment.h>
+
 // base virtual address to kernel pages (mapped to physical address 0x00000000) 
 #define KERNEL_BASE 0xC0000000
 
