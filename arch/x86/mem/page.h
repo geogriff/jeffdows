@@ -1,8 +1,6 @@
 #ifndef _PAGE_H
 #define _PAGE_H
 
-#include <mem/segment.h>
-
 // base virtual address to kernel pages (mapped to physical address 0x00000000) 
 #define KERNEL_BASE 0xC0000000
 
@@ -12,7 +10,8 @@
 
 #ifndef __ASM__
 
-typedef unsigned long phys_addr_t;
+#include <types.h>
+#include <mem/segment.h>
 
 typedef struct phys_mmap {
   phys_addr_t base_addr;
