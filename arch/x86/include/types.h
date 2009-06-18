@@ -1,7 +1,9 @@
 #ifndef _TYPES_H
 #define _TYPES_H
 
-typedef size_t unsigned int;
-typedef uint32_t unsigned long;
+typedef unsigned int uint32_t;
+typedef unsigned int phys_addr_t;
+typedef unsigned int size_t;
+typedef signed int off_t;
 
 #endif /* _TYPES_H */
