@@ -6,7 +6,18 @@
 // base virtual address to kernel pages (mapped to physical address 0x00000000) 
 #define KERNEL_BASE 0xC0000000
 
+#define PAGE_SIZE 4096
+#define PAGE_FLOOR(x) ((x) & ~(PAGE_SIZE - 1))
+#define PAGE_CEIL(x) PAGE_FLOOR((x) + (PAGE_SIZE - 1))
+
 #ifndef __ASM__
+
+typedef unsigned long phys_addr_t;
+
+typedef struct phys_mmap {
+  phys_addr_t base_addr;
+  size_t limit;
+} phys_mmap_t;
 
 /* IMPORTANT!! the ordering of these bits in each byte is a compiler choice!
    currently, these structs are written the gcc way, which is least significant

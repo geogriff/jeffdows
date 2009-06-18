@@ -15,7 +15,7 @@ segment_descriptor_t gdt[] ALIGN(8) = {
     .limit_high = 0x0,      // high 4 bits of segment limit
     .present = 0b0,         // present flag
     .dpl = 0b00,            // descriptor privelege level
-    .type = SDT_NULL,       // descriptor type
+    .type = DT_NULL,        // descriptor type
     .base_low = 0x000000,   // low 24 bits of segment base address
     .limit_low = 0x0000     // low 16 bits of segment limit
   },
@@ -26,8 +26,8 @@ segment_descriptor_t gdt[] ALIGN(8) = {
     .reserved = 0b0,        // reserved bit (must be 0)
     .limit_high = 0xF,      // high 4 bits of segment limit
     .present = 0b1,         // present flag
-    .dpl = 0b00,            // descriptor privelege level
-    .type = SDT_CODE_RA,    // descriptor type
+    .dpl = DPL_KERNEL,      // descriptor privelege level
+    .type = DT_CODE_RA,     // descriptor type
     .base_low = 0x000000,   // low 24 bits of segment base address
     .limit_low = 0xFFFF     // low 16 bits of segment limit
   },
@@ -38,8 +38,8 @@ segment_descriptor_t gdt[] ALIGN(8) = {
     .reserved = 0b0,        // reserved bit (must be 0)
     .limit_high = 0xF,      // high 4 bits of segment limit
     .present = 0b1,         // present flag
-    .dpl = 0b00,            // descriptor privelege level
-    .type = SDT_DATA_WA,    // descriptor type
+    .dpl = DPL_KERNEL,      // descriptor privelege level
+    .type = DT_DATA_WA,     // descriptor type
     .base_low = 0x000000,   // low 24 bits of segment base address
     .limit_low = 0xFFFF     // low 16 bits of segment limit
   },
@@ -50,8 +50,8 @@ segment_descriptor_t gdt[] ALIGN(8) = {
     .reserved = 0b0,        // reserved bit (must be 0)
     .limit_high = 0xF,      // high 4 bits of segment limit
     .present = 0b1,         // present flag
-    .dpl = 0b11,            // descriptor privelege level
-    .type = SDT_CODE_RA,    // descriptor type
+    .dpl = DPL_USER,        // descriptor privelege level
+    .type = DT_CODE_RA,     // descriptor type
     .base_low = 0x000000,   // low 24 bits of segment base address
     .limit_low = 0xFFFF     // low 16 bits of segment limit
   },
@@ -62,8 +62,8 @@ segment_descriptor_t gdt[] ALIGN(8) = {
     .reserved = 0b0,        // reserved bit (must be 0)
     .limit_high = 0xF,      // high 4 bits of segment limit
     .present = 0b1,         // present flag
-    .dpl = 0b11,            // descriptor privelege level
-    .type = SDT_DATA_WA,    // descriptor type
+    .dpl = DPL_USER,        // descriptor privelege level
+    .type = DT_DATA_WA,     // descriptor type
     .base_low = 0x000000,   // low 24 bits of segment base address
     .limit_low = 0xFFFF     // low 16 bits of segment limit
   }
