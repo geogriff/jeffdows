@@ -4,6 +4,8 @@
 // base virtual address to kernel pages (mapped to physical address 0x00000000) 
 #define KERNEL_BASE 0xC0000000
 
+#define PA(x) (KERNEL_BASE + (x))
+
 #define PAGE_SIZE 4096
 #define PAGE_FLOOR(x) ((x) & ~(PAGE_SIZE - 1))
 #define PAGE_CEIL(x) PAGE_FLOOR((x) + (PAGE_SIZE - 1))
@@ -87,6 +89,9 @@ typedef union pte {
 } pte_t;
 
 extern pde_t page_dir[1024];
+
+// number of pages available to pmem allocator. declared in mem/pmem.c
+extern int page_count;
 
 #endif /* __ASM__ */
 

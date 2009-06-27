@@ -10,6 +10,14 @@ void init_mem(phys_mmap_t *phys_mmap) {
     mmap->base_addr = PAGE_CEIL(mmap->base_addr);
     mmap->limit = PAGE_FLOOR(mmap->limit);
 
+    // increment total number of pages available to system
+    page_count += mmap->limit / PAGE_SIZE;
+  }
+
+  // calculate number of pages needed for pmem data
+
+  for (phys_mmap_t *mmap = &phys_mmap[0]; !(mmap->limit == 0 && 
+                                            mmap->base_addr == 0); mmap++) {
     // find a suitable spot for the pmem allocator data
     if (mmap->limit >= pmem_page_count * PAGE_SIZE) {
       pmem_pages = mmap->base_addr;
@@ -17,13 +25,7 @@ void init_mem(phys_mmap_t *phys_mmap) {
       mmap->limit -= pmem_page_count * PAGE_SIZE;
     }
 
-    // calculate total number of pages in system
-    page_count += mmap->limit / PAGE_SIZE;
-  }
-
-  for (phys_mmap_t *mmap = &phys_mmap[0]; !(mmap->limit == 0 && 
-                                            mmap->base_addr == 0); mmap++) {
-    // find a suitable spot for the vmem allocator data
+    // find a suitable spot for the page_t structures
     if (mmap->limit >= page_count * sizeof(page_t)) {
       vmem_pages = mmap->base_addr;
       mmap->base_addr += page_count * sizeof(page_t);
@@ -42,3 +44,4 @@ void init_mem(phys_mmap_t *phys_mmap) {
   // initialize virtual memory allocator
   init_vmem(vmem_pages);
 }
+n
