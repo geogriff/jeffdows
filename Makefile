@@ -16,8 +16,9 @@ export CFLAGS LDFLAGS
 # this will get some architecture specific vars/targets for us
 include arch/$(ARCH)/Makefile
 
-# add machine indepentdent dirs
+# add machine independent dirs
 init-o += init/
+core-o += mem/
 
 # src directories
 kernel-dirs := $(filter %/, $(init-o) $(core-o))

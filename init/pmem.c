@@ -1,25 +1,14 @@
 #include <mem/page.h>
+#include <mem/pmem.h>
 
-int page_count;
+void init_pmem_segment(phys_mmap_t *mmap, page_t *page_data) {
+  pmem_segment_t *pmem_segment = &pmem_segments[pmem_segment_count++];
+  pmem_segment->start = mmap->start; 
+  pmem_segment->limit = mmap->limit;
+  pmem_segment->pages = page_data;
+}
 
-void init_pmem(phys_mmap_t *phys_mmap, phys_addr_t pmem_pages) {
-  void *pmem_data = PA(pmem_pages);
-  // pmem bitmap sits at beginning of pmem_data
-  char *pmem_bitmap = pmem_pages;
-
-  // mark all pages as used in bitmap
-  memset(pmem_bitmap, 0, page_count / 8);
-
-  for (phys_mmap_t *mmap = &phys_mmap[0]; !(mmap->limit == 0 && 
-                                            mmap->base_addr == 0); mmap++) {
-    for (phys_addr_t pa = mmap->base_addr; pa < mmap->base_addr + mmap->limit;
-         pa += PAGE_SIZE) {
-      // verify that page is available for general use
-      if (PA(pa) > &end && 
-          pa < pmem_pages || pa > pmem_pages + pmem_page_count * PAGE_SIZE) {
-        // free available page
-        pmem_free_page(PA(pa));
-      }
-    }
-  }
+void init_pmem_page(phys_addr_t phys_addr) {
+  page_t *page = pmem_get_page(phys_addr);
+  page->phys_addr = phys_addr;
 }

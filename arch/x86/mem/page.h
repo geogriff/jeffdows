@@ -4,7 +4,7 @@
 // base virtual address to kernel pages (mapped to physical address 0x00000000) 
 #define KERNEL_BASE 0xC0000000
 
-#define PA(x) (KERNEL_BASE + (x))
+#define PA(x) ((void *) (KERNEL_BASE + (x)))
 
 #define PAGE_SIZE 4096
 #define PAGE_FLOOR(x) ((x) & ~(PAGE_SIZE - 1))
@@ -14,11 +14,6 @@
 
 #include <types.h>
 #include <mem/segment.h>
-
-typedef struct phys_mmap {
-  phys_addr_t base_addr;
-  size_t limit;
-} phys_mmap_t;
 
 /* IMPORTANT!! the ordering of these bits in each byte is a compiler choice!
    currently, these structs are written the gcc way, which is least significant
@@ -89,9 +84,6 @@ typedef union pte {
 } pte_t;
 
 extern pde_t page_dir[1024];
-
-// number of pages available to pmem allocator. declared in mem/pmem.c
-extern int page_count;
 
 #endif /* __ASM__ */
 
