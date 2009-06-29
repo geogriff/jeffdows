@@ -8,6 +8,6 @@ typedef struct phys_mmap {
   size_t limit;
 } phys_mmap_t;
 
-void init_mem();
+void init_mem(phys_mmap_t *phys_mmap);
 
 #endif

@@ -1,8 +1,7 @@
-#include <init/mem.h>
+#include <core/printf.h>
 
 void main() {
-  init_mem();
-
+  puts("booting OS................");
   while(1) {
   }
 }
