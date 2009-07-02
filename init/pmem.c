@@ -1,3 +1,4 @@
+#include <init/init.h>
 #include <mem/page.h>
 #include <mem/pmem.h>
 

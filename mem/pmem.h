@@ -5,11 +5,6 @@
 
 #define MAX_PMEM_SEGMENTS 128
 
-typedef struct phys_mmap {
-  phys_addr_t start;
-  size_t limit;
-} phys_mmap_t;
-
 typedef struct page {
   phys_addr_t phys_addr;
 } page_t;

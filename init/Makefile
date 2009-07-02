@@ -7,5 +7,5 @@ clean:
 %.o: %.c
 	$(CC) $(CFLAGS) -o $@ -c $+
 
-all.o: main.o mem.o pmem.o
+all.o: main.o init.o mem.o pmem.o
 	$(LD) $(LDFLAGS) -r -o $@ $+

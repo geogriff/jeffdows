@@ -16,6 +16,19 @@
 
 #define MULTIBOOT_MAGIC 0x2BADB002
 
+#define MULTIBOOT_FLAG_MEM (1<<0)
+#define MULTIBOOT_FLAG_BOOT_DEV (1<<1)
+#define MULTIBOOT_FLAG_CMDLINE (1<<2)
+#define MULTIBOOT_FLAG_MODS (1<<3)
+#define MULTIBOOT_FLAG_AOUT_SYMS (1<<4)
+#define MULTIBOOT_FLAG_ELF_SYMS (1<<5)
+#define MULTIBOOT_FLAG_MMAP (1<<6)
+#define MULTIBOOT_FLAG_DRIVES (1<<7)
+#define MULTIBOOT_FLAG_CFG_TABLE (1<<8)
+#define MULTIBOOT_FLAG_LDR_NAME (1<<9)
+#define MULTIBOOT_FLAG_APM_TABLE (1<<10)
+#define MULTIBOOT_FLAG_VBE_INFO (1<<11)
+
 #ifndef __ASM__
 
 typedef struct module_info {
@@ -81,7 +94,7 @@ typedef struct multiboot_info {
   union {
     aout_symbol_table_t aout_symbol_table;
     elf_section_header_table_t elf_section_header_table;
-  };
+  } syms;
   unsigned long mmap_length;
   unsigned long mmap_addr;
   unsigned long drives_length;
