@@ -9,6 +9,6 @@ typedef struct phys_mmap {
   struct phys_mmap *next;
 } phys_mmap_t;
 
-void init_mem(phys_mmap_t *phys_mmap);
+void init_mem();
 
 #endif
