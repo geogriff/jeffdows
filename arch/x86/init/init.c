@@ -74,23 +74,28 @@ segment_descriptor_t gdt[] ALIGN(8) = {
 void init_x86(multiboot_info_t *multiboot_info) {
   // get boot info from multiboot struct
   if (multiboot_info->flags & MULTIBOOT_FLAG_MMAP) {
-    phys_mmap_t *phys_mmap = PA(multiboot_info->mmap_addr);
-    for (mmap_info_t *multiboot_mmap = PA(multiboot_info->mmap_addr);
-         (void *) multiboot_mmap < PA(multiboot_info->mmap_addr + 
-                                      multiboot_info->mmap_length);
+    phys_mmap_t *phys_mmap = &boot_info.phys_mmap[0];
+    for (mmap_info_t *multiboot_mmap = 
+           (mmap_info_t *) multiboot_info->mmap_addr;
+         (void *) multiboot_mmap < (void *) (multiboot_info->mmap_addr + 
+                                             multiboot_info->mmap_length);
          multiboot_mmap++) {
+      if (phys_mmap >= &boot_info.phys_mmap[MAX_MMAP]) {
+        //panic
+      }
+
       if (multiboot_mmap->type == 1) {
         phys_mmap->start = multiboot_mmap->base_addr_low;
         phys_mmap->limit = multiboot_mmap->length_low;
-        phys_mmap->next = phys_mmap + 1;
         phys_mmap++;
+        boot_info.phys_mmap_count++;
       }
+
     }
-    (phys_mmap-1)->next = 0;
-    boot_info.phys_mmap = PA(multiboot_info->mmap_addr);
   } else {
     // panic
   }
+
   // set up gdt
   pseudo_segment_descriptor_t gdtd = {
     .limit = (sizeof(gdt) - 1),

@@ -2,6 +2,7 @@
 
 void main() {
   puts("booting OS................");
+  init();
   while(1) {
   }
 }

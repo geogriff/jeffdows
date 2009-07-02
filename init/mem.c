@@ -6,10 +6,10 @@
 #include <string.h>
 
 void init_mem() {
-  phys_addr_t pmem_data_addr = 0;
+  phys_addr_t pmem_data_addr;
 
-  for (phys_mmap_t *mmap = &boot_info.phys_mmap[0]; mmap->next != NULL; 
-       mmap = mmap->next) {
+  for (phys_mmap_t *mmap = &boot_info.phys_mmap[0];
+       mmap < &boot_info.phys_mmap[boot_info.phys_mmap_count]; mmap++) {
     // align mmap to page boundaries
     mmap->start = PAGE_CEIL(mmap->start);
     mmap->limit = PAGE_FLOOR(mmap->limit);
@@ -21,27 +21,27 @@ void init_mem() {
   // calculate number of pages needed for pmem data
   size_t pmem_data_size = PAGE_CEIL(pmem_page_count * sizeof(page_t));
 
-  for (phys_mmap_t *mmap = &boot_info.phys_mmap[0]; mmap->next != NULL;
-       mmap = mmap->next) {
+  for (phys_mmap_t *mmap = &boot_info.phys_mmap[0];
+       mmap < &boot_info.phys_mmap[boot_info.phys_mmap_count]; mmap++) {
     // find a suitable spot for the pmem allocator data
-    if (pmem_data_addr == 0 && mmap->limit >= pmem_data_size) {
-      pmem_data_addr = mmap->start;
+    if (mmap->limit >= pmem_data_size) {
+      pmem_pages = PA(mmap->start);
       mmap->start += pmem_data_size;
       mmap->limit -= pmem_data_size;
+      break;
     }
   }
 
-  if (pmem_data_addr == 0) {
+  if (pmem_pages == NULL) {
     //panic
   }
 
   // initialize page data
-  pmem_pages = PA(pmem_data_addr);
-  memset(PA(pmem_pages), 0, pmem_data_size);
+  memset(pmem_pages, 0, pmem_data_size);
 
   int pmem_page_idx = 0;
-  for (phys_mmap_t *mmap = &boot_info.phys_mmap[0]; mmap->next != NULL;
-       mmap = mmap->next) {
+  for (phys_mmap_t *mmap = &boot_info.phys_mmap[0];
+       mmap < &boot_info.phys_mmap[boot_info.phys_mmap_count]; mmap++) {
     init_pmem_segment(mmap, &pmem_pages[pmem_page_idx]);
     for (phys_addr_t phys_addr = mmap->start;
          phys_addr < mmap->start + mmap->limit; phys_addr += PAGE_SIZE) {
