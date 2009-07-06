@@ -4,9 +4,13 @@
 #include <types.h>
 
 #define MAX_PMEM_SEGMENTS 128
+#define MAX_PAGE_ORDER 12
+
+#define PAGE_ORDER_INUSE (MAX_PAGE_ORDER+1)
 
 typedef struct page {
   phys_addr_t phys_addr;
+  int order;
 } page_t;
 
 typedef struct pmem_segment {

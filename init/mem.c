@@ -46,6 +46,7 @@ void init_mem() {
     for (phys_addr_t phys_addr = mmap->start;
          phys_addr < mmap->start + mmap->limit; phys_addr += PAGE_SIZE) {
       init_pmem_page(phys_addr);
+      pmem_free(pmem_get_page(phys_addr));
     }
     pmem_page_idx += mmap->limit / PAGE_SIZE;
   }
