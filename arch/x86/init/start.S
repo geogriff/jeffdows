@@ -16,6 +16,15 @@ kernel_start:
     // TODO: there should be a well-defined state on entry to kernel_start
     mov %eax, %esi
 
+    mov $(.bss-KERNEL_BASE), %edi	// pointer to .bss (in physical memory)
+    mov $_end, %ecx			// calculate size of bss (in words)
+    sub $.bss, %ecx
+    shr $2, %ecx
+    xor %eax, %eax
+zero_bss:
+    stosl				// zero current word, increment di
+    loop zero_bss			// loop until (--ecx == 0)
+
     // set up boot gdt, set data segment registers
     lgdt (boot_gdtd-KERNEL_BASE)
     mov $BOOT_DS, %eax
