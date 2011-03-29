@@ -28,6 +28,16 @@ struct slab *slab_freelists[] = {
   NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
 };
 
+#define SLAB_FREELIST(order) (slab_freelists[order - SLAB_ORDER_MIN])
+
+int get_slab_order(size_t size) {
+  int order = 1;
+  for (size--; size > 1; size /= 2, order++);
+  return 
+    order > SLAB_ORDER_MIN? (order <= SLAB_ORDER_MAX? order : -1)
+    : SLAB_ORDER_MIN;
+}
+
 struct slab *slab_alloc(int order) {
   // allocate a new page for this slab
   // XXX dont allocate highmem page? (on 32-bit machines)
@@ -38,25 +48,34 @@ struct slab *slab_alloc(int order) {
   slab->kmalloc_times = 0;
   // add as many buffers to freelist as will fit in the page
   slab->buffer_freelist = slab->first_buffer;
-  for (struct buffer *buffer = slab->first_buffer; 
-       ((void *) buffer) + BUFFER_SIZE(order) < ((void *) slab) + PAGE_SIZE;
+  struct buffer *buffer;
+  for (buffer = slab->first_buffer; 
+       ((void *) buffer) + 2 * BUFFER_SIZE(order)
+	 < ((void *) slab) + PAGE_SIZE;
        buffer = buffer->next_free) {
     buffer->next_free = ((void *) buffer + BUFFER_SIZE(order));
   }
+  buffer->next_free = NULL;
+
   return slab;
 }
 
 void *kmalloc(size_t size) {
-  int order = (size / 2);
+  int order = get_slab_order(size);
+  // fail if requested size is too large
+  if (order < 0) {
+    return NULL;
+  }
+
   // XXX disable interrupts
-  struct slab *slab = slab_freelists[order];
+  struct slab *slab = SLAB_FREELIST(order);
   if (slab == NULL) {
     // allocate a new slab
     // XXX enable interrupts again during slab_alloc
     slab = slab_alloc(order);
     // add slab to global freelist
-    slab->next_free = slab_freelists[order];
-    slab_freelists[order] = slab;
+    slab->next_free = SLAB_FREELIST(order);
+    SLAB_FREELIST(order) = slab;
   }
   // allocate a buffer from the slab
   struct buffer *buffer = slab->buffer_freelist;
@@ -64,7 +83,7 @@ void *kmalloc(size_t size) {
 
   // remove slab from freelist if it is now full
   if (slab->buffer_freelist == NULL) {
-    slab_freelists[order] = slab->next_free;
+    SLAB_FREELIST(order) = slab->next_free;
     slab->next_free = NULL;
   }
 
@@ -91,8 +110,8 @@ void kfree(void *buf) {
   // add slab to freelist if it was previously full
   // XXX add to end of freelist to improve performance?
   if (buffer->next_free == NULL) {
-    slab->next_free = slab_freelists[slab->order];
-    slab_freelists[slab->order] = slab;
+    slab->next_free = SLAB_FREELIST(slab->order);
+    SLAB_FREELIST(slab->order) = slab;
   }
 
   // XXX deallocate slab if it becomes empty
