@@ -17,6 +17,8 @@ void main() {
   }
   for (int i = 0; i < 1000; i++) {
     puts(bufs[i]);
+    puts(" ");
+    kfree(bufs[i]);
   }
 
   while(1) {
