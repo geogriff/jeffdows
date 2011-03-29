@@ -10,63 +10,63 @@
 
 segment_descriptor_t gdt[] ALIGN(8) = {
   { // null descriptor
-    .base_high = 0x00,      // high 8 bits of segment base address
-    .granularity = 0b0,     // granularity flag
-    .big = 0b0,             // big flag
-    .reserved = 0b0,        // reserved bit (must be 0)
-    .limit_high = 0x0,      // high 4 bits of segment limit
-    .present = 0b0,         // present flag
-    .dpl = 0b00,            // descriptor privelege level
+    .base_high = 0,         // high 8 bits of segment base address
+    .granularity = 0,       // granularity flag
+    .big = 0,               // big flag
+    .reserved = 0,          // reserved bit (must be 0)
+    .limit_high = 0,        // high 4 bits of segment limit
+    .present = 0,           // present flag
+    .dpl = 0,               // descriptor privelege level
     .type = DT_NULL,        // descriptor type
-    .base_low = 0x000000,   // low 24 bits of segment base address
-    .limit_low = 0x0000     // low 16 bits of segment limit
+    .base_low = 0,          // low 24 bits of segment base address
+    .limit_low = 0          // low 16 bits of segment limit
   },
   { // kernel code descriptor
-    .base_high = 0x00,      // high 8 bits of segment base address
-    .granularity = 0b1,     // granularity flag
-    .big = 0b1,             // big/default flag
-    .reserved = 0b0,        // reserved bit (must be 0)
+    .base_high = 0,         // high 8 bits of segment base address
+    .granularity = 1,       // granularity flag
+    .big = 1,               // big/default flag
+    .reserved = 0,          // reserved bit (must be 0)
     .limit_high = 0xF,      // high 4 bits of segment limit
-    .present = 0b1,         // present flag
+    .present = 1,           // present flag
     .dpl = DPL_KERNEL,      // descriptor privelege level
     .type = DT_CODE_RA,     // descriptor type
-    .base_low = 0x000000,   // low 24 bits of segment base address
+    .base_low = 0,          // low 24 bits of segment base address
     .limit_low = 0xFFFF     // low 16 bits of segment limit
   },
   { // kernel data descriptor
-    .base_high = 0x00,      // high 8 bits of segment base address
-    .granularity = 0b1,     // granularity flag
-    .big = 0b1,             // big/default flag
-    .reserved = 0b0,        // reserved bit (must be 0)
+    .base_high = 0,         // high 8 bits of segment base address
+    .granularity = 1,       // granularity flag
+    .big = 1,               // big/default flag
+    .reserved = 0,          // reserved bit (must be 0)
     .limit_high = 0xF,      // high 4 bits of segment limit
-    .present = 0b1,         // present flag
+    .present = 1,           // present flag
     .dpl = DPL_KERNEL,      // descriptor privelege level
     .type = DT_DATA_WA,     // descriptor type
-    .base_low = 0x000000,   // low 24 bits of segment base address
+    .base_low = 0,          // low 24 bits of segment base address
     .limit_low = 0xFFFF     // low 16 bits of segment limit
   },
   { // user code descriptor
-    .base_high = 0x00,      // high 8 bits of segment base address
-    .granularity = 0b1,     // granularity flag
-    .big = 0b1,             // big/default flag
-    .reserved = 0b0,        // reserved bit (must be 0)
+    .base_high = 0,         // high 8 bits of segment base address
+    .granularity = 1,       // granularity flag
+    .big = 1,               // big/default flag
+    .reserved = 0,          // reserved bit (must be 0)
     .limit_high = 0xF,      // high 4 bits of segment limit
-    .present = 0b1,         // present flag
+    .present = 1,           // present flag
     .dpl = DPL_USER,        // descriptor privelege level
     .type = DT_CODE_RA,     // descriptor type
-    .base_low = 0x000000,   // low 24 bits of segment base address
+    .base_low = 0,          // low 24 bits of segment base address
     .limit_low = 0xFFFF     // low 16 bits of segment limit
   },
   { // user data descriptor
-    .base_high = 0x00,      // high 8 bits of segment base address
-    .granularity = 0b1,     // granularity flag
-    .big = 0b1,             // big/default flag
-    .reserved = 0b0,        // reserved bit (must be 0)
+    .base_high = 0,         // high 8 bits of segment base address
+    .granularity = 1,       // granularity flag
+    .big = 1,               // big/default flag
+    .reserved = 0,          // reserved bit (must be 0)
     .limit_high = 0xF,      // high 4 bits of segment limit
-    .present = 0b1,         // present flag
+    .present = 1,           // present flag
     .dpl = DPL_USER,        // descriptor privelege level
     .type = DT_DATA_WA,     // descriptor type
-    .base_low = 0x000000,   // low 24 bits of segment base address
+    .base_low = 0,          // low 24 bits of segment base address
     .limit_low = 0xFFFF     // low 16 bits of segment limit
   }
 };
