@@ -1,6 +1,7 @@
 #include <core/printf.h>
 #include <mem/kmalloc.h>
 #include <stddef.h>
+#include <stdbool.h>
 
 #include "init.h"
 
@@ -8,11 +9,14 @@ void main() {
   puts("booting OS................\n");
   init();
 
-  char *bufs[1000];
-  while(1) {
-    for (int i = 0; i < 1000; i++) {
+  bool alloc_failed = false;
+  for (int limit = 1458; !alloc_failed; limit++) {
+    char *bufs[limit];
+    for (int i = 0; i < limit; i++) {
       bufs[i] = kmalloc(sizeof(char) * (i + 1));
       if (bufs[i] == NULL) {
+	puts("allbreak ocation failed!");
+	alloc_failed = true;
 	break;
       }
 
@@ -21,16 +25,11 @@ void main() {
       }
       bufs[i][i] = 0;
     }
-    for (int i = 0; i < 1000; i++) {
+    for (int i = 0; i < limit; i++) {
       if (bufs[i] == NULL) {
-	puts("allocation failed!");
 	break;
       }
-      puts(bufs[i]);
       kfree(bufs[i]);
     }
-  }
-
-  while(1) {
   }
 }
