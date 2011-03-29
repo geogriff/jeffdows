@@ -1,5 +1,6 @@
 #include <core/printf.h>
 #include <mem/kmalloc.h>
+#include <stddef.h>
 
 #include "init.h"
 
