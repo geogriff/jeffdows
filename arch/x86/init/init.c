@@ -110,7 +110,7 @@ void init_x86(multiboot_info_t *multiboot_info) {
   for (int i = 0; i < (KERNEL_BASE>>22); i++)
     page_dir[i].nonpresent = nonpresent_page;
 
-  // set up 4mb kernel code pages in page dir
+  // map first 1GB of physical memory to KERNEL_BASE
   pde_bigpage_t kernel_page = {
     .base_addr = 0,
     .reserved = 0,
@@ -125,14 +125,8 @@ void init_x86(multiboot_info_t *multiboot_info) {
     .writable = 1,
     .present = 1
   };
-  for (; kernel_page.base_addr <= (((unsigned int) &_end) - KERNEL_BASE) >> 22;
-       kernel_page.base_addr++)
+  for (int i = 0; i < 1024; i++, kernel_page.base_addr++)
     page_dir[kernel_page.base_addr + (KERNEL_BASE>>22)].bigpage = kernel_page;
-
-  // clear rest of kernel pages
-  for (int i = (((unsigned int) &_end) >> 22) + 1; 
-       i < 1024; i++)
-    page_dir[i].nonpresent = nonpresent_page;
 
   init_interrupts();
 }
