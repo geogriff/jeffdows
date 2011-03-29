@@ -21,7 +21,7 @@ void main() {
       }
       bufs[i][i] = 0;
     }
-    for (int i = 0; i < 1000; i--) {
+    for (int i = 0; i < 1000; i++) {
       if (bufs[i] == NULL) {
 	puts("allocation failed!");
 	break;
