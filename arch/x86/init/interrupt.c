@@ -8,14 +8,14 @@ descriptor_t idt[IDT_SIZE];
 void set_isr(interrupt_vector_t vector, descriptor_type_t type, dpl_t dpl,
              isr_entry_t entry) {
   gate_descriptor_t gate = {
-    .off_high = ((unsigned int) entry) >> 16,
+    .off_high = ((uint32_t) entry) >> 16,
     .present = 1,
     .dpl = dpl,
     .type = type,
     .reserved = 0,
     .param_count = 0,
     .segment = KERNEL_CS,
-    .off_low = (((unsigned int) entry) << 16) >> 16
+    .off_low = entry
   };
   idt[vector].gate = gate;
 }
@@ -74,7 +74,7 @@ void init_interrupts() {
 
   pseudo_segment_descriptor_t idtd = {
     (sizeof(idt) - 1),
-    (unsigned int) &idt
+    (uint32_t) &idt
   };
   set_idt(&idtd);
 }
