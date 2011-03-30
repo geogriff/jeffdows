@@ -1,3 +1,4 @@
+#include <stdint.h>
 #include <mem/page.h>
 #include "printf.h"
 
@@ -14,11 +15,11 @@ void putchar(char c) {
     if (vga_ypos >= vga_rows) {
       for (vga_ypos = 0; vga_ypos < vga_rows-1; vga_ypos++)
         for (vga_xpos = 0; vga_xpos < vga_cols; vga_xpos++)
-          *((short *) VGA_BASE + vga_ypos * vga_cols + vga_xpos) = 
-            *((short *) VGA_BASE + (vga_ypos+1) * vga_cols + vga_xpos);
+          *((uint16_t *) VGA_BASE + vga_ypos * vga_cols + vga_xpos) = 
+            *((uint16_t *) VGA_BASE + (vga_ypos+1) * vga_cols + vga_xpos);
       // now clear last line
       for (vga_xpos = 0; vga_xpos < vga_cols; vga_xpos++)
-        *((short *) VGA_BASE + vga_ypos * vga_cols + vga_xpos) = 0;
+        *((uint16_t *) VGA_BASE + vga_ypos * vga_cols + vga_xpos) = 0;
     }
     vga_xpos = 0;
   } else if (c != '\r') {
