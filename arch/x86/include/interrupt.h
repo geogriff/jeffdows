@@ -2,6 +2,7 @@
 #define _INTERRUPT_H
 
 #ifdef __ASM__
+
 #define INT_FIRST 0
 #define INT_DIVIDE_ERROR 0
 #define INT_NMI 2
@@ -23,26 +24,28 @@
 #define INT_EXTERNAL 32
 #define INT_SYSCALL 32
 #define INT_LAST 25
+
 #else
+
 typedef enum interrupt_vector {
   INT_FIRST = 0,
   INT_DIVIDE_ERROR = 0,
   INT_NMI = 2,
-  INT_BREAKPOINT = 3,
-  INT_OVERFLOW = 4,
-  INT_BOUND_RANGE = 5,
-  INT_INVALID_OPCODE = 6,
-  INT_NO_MATH = 7,
-  INT_DOUBLE_FAULT = 8,
-  INT_INVALID_TSS = 10,
-  INT_NO_SEGMENT = 11,
-  INT_SS_FAULT = 12,
-  INT_GP_FAULT = 13,
-  INT_PAGE_FAULT = 14,
+  INT_BREAKPOINT,
+  INT_OVERFLOW,
+  INT_BOUND_RANGE,
+  INT_INVALID_OPCODE,
+  INT_NO_MATH,
+  INT_DOUBLE_FAULT,
+  INT_INVALID_TSS,
+  INT_NO_SEGMENT,
+  INT_SS_FAULT,
+  INT_GP_FAULT,
+  INT_PAGE_FAULT,
   INT_MATH_FAULT = 16,
-  INT_ALIGN_CHECK = 17,
-  INT_MACHINE_CHECK = 18,
-  INT_SIMD_FAULT = 19,
+  INT_ALIGN_CHECK,
+  INT_MACHINE_CHECK,
+  INT_SIMD_FAULT,
   INT_EXTERNAL = 32,
   INT_SYSCALL = 32,
   INT_LAST = 255
@@ -51,35 +54,38 @@ typedef enum interrupt_vector {
 
 #ifndef __ASM__
 
+#include <stdbool.h>
+#include <stdint.h>
+
 #define IDT_SIZE (INT_LAST+1)
 
 typedef struct trapped_state {
-  long eax;
-  long ebx;
-  long ecx;
-  long edx;
-  long ebp;
-  long esi;
-  long edi;
-  long ds;
-  long es;
-  long fs;
-  long gs;
+  uint32_t eax;
+  uint32_t ebx;
+  uint32_t ecx;
+  uint32_t edx;
+  uint32_t ebp;
+  uint32_t esi;
+  uint32_t edi;
+  uint32_t ds;
+  uint32_t es;
+  uint32_t fs;
+  uint32_t gs;
   // members provided by cpu always
-  long eip;
-  long cs;
-  long eflags;
+  uint32_t eip;
+  uint32_t cs;
+  uint32_t eflags;
   // members provided by cpu only on mode switch
-  long esp;
-  long ss;
+  uint32_t esp;
+  uint32_t ss;
 } trapped_state_t;
 
 typedef struct trap_error_code {
-  unsigned external:1;      // external event caused this interrupt
-  unsigned idt:1;           // segment is in the idt
-  unsigned local:1;         // segment is in an ldt
-  unsigned segment_idx:13;  // segment index
-  unsigned :16;             // reserved
+  bool external:1;          // external event caused this interrupt
+  bool idt:1;               // segment is in the idt
+  bool local:1;             // segment is in an ldt
+  uint16_t segment_idx:13;  // segment index
+  uint16_t :16;             // reserved
 } trap_error_code_t;
 
 typedef void *isr_entry_t;
