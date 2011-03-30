@@ -5,10 +5,4 @@ clean:
 	rm *.o
 
 kernel-boot.o: boot.o
-	$(LD) $(LDFLAGS) -r -o $@ $+
-
-%.o: %.c
-	$(CC) $(CFLAGS) -o $@ -c $+
-
-%.o: %.S
-	$(CC) $(CFLAGS) -o $@ -c $+
+	$(LD) $(LDFLAGS) -o $@ $+

@@ -5,10 +5,4 @@ clean:
 	rm *.o
 
 all.o: printf.o string.o trap.o trap_entry.o asm.o
-	$(LD) $(LDFLAGS) -r -o $@ $+
-
-%.o: %.c
-	$(CC) $(CFLAGS) -o $@ -c $+
-
-%.o: %.S
-	$(CC) $(CFLAGS) -o $@ -c $+
+	$(LD) $(LDFLAGS) -o $@ $^

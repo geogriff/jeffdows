@@ -4,14 +4,17 @@ SRCDIR = $(CURDIR)
 ARCH ?= $(shell uname -m | sed -e s/i.86/x86/)
 
 CC ?= gcc
+CPP ?= gcc
+AS ?= gcc
 LD ?= ld
 
-CFLAGS += -ggdb -nostdlib -fno-builtin -std=c99 -I$(SRCDIR) -I$(SRCDIR)/include
-CFLAGS += -I$(SRCDIR)/arch/$(ARCH) -I$(SRCDIR)/arch/$(ARCH)/include
+CFLAGS += -g -nostdlib -fno-builtin -std=c99
+CPPFLAGS += -I$(SRCDIR) -I$(SRCDIR)/include
+CPPFLAGS += -I$(SRCDIR)/arch/$(ARCH) -I$(SRCDIR)/arch/$(ARCH)/include
 LDFLAGS += -g
 
-export CC LD
-export CFLAGS LDFLAGS
+export CC CPP AS LD
+export CFLAGS CPPFLAGS LDFLAGS ASFLAGS
 
 # this will get some architecture specific vars/targets for us
 include arch/$(ARCH)/Makefile
@@ -31,7 +34,7 @@ core-o := $(patsubst %/, %/all.o, $(core-o))
 # descend into directories
 .PHONY: $(src-dirs)
 $(src-dirs):
-	$(MAKE) -C $@
+	$(MAKE) -C $@ LDFLAGS="$(LDFLAGS) -r"
 
 # kernel objects
 kernel-init := $(init-o)
