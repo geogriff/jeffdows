@@ -58,17 +58,18 @@ pmem_segment_t *pmem_get_seg(phys_addr_t phys_addr) {
   return NULL;
 }
 
-void pmem_free(page_t *page) {
-  page_t *buddy = pmem_get_page(page->phys_addr ^ PAGE_SIZE);
+void pmem_free(page_t *page, int order) {
   pmem_segment_t *seg = pmem_get_seg(page->phys_addr);
 
   // mark page as free and put on freelist
-  page->order = 0;
+  page->order = order;
   freelist_push(&freelists[page->order], page);
 
   // merge with other pages as much as possible
+  page_t *buddy;
   while (page->order < MAX_PAGE_ORDER && 
-         buddy != NULL && 
+         ((buddy = pmem_get_page(page->phys_addr ^ (PAGE_SIZE << page->order)))
+	  != NULL) && 
          buddy->phys_addr >= seg->start &&
          buddy->phys_addr < seg->start + seg->limit &&
          buddy->order == page->order) {
@@ -88,38 +89,36 @@ void pmem_free(page_t *page) {
 
     // add the new area to freelist
     freelist_push(&freelists[page->order], page);
-
-    buddy = pmem_get_page(page->phys_addr ^ (PAGE_SIZE << page->order));
   }
 }
 
-page_t *pmem_alloc() {
-  int order = 0;
+page_t *pmem_alloc(int order) {
+  int curorder = order;
 
   // find lowest order freelist with available pages
-  while (freelists[order] == NULL) {
-    order++;
-    if (order > MAX_PAGE_ORDER) {
+  while (freelists[curorder] == NULL) {
+    curorder++;
+    if (curorder > MAX_PAGE_ORDER) {
       return NULL;
     }
   }
 
   // split free areas until we have a single page
-  while (order > 0) {
-    page_t *first_page = freelist_pop(&freelists[order]);
+  while (curorder > order) {
+    page_t *first_page = freelist_pop(&freelists[curorder]);
 
-    order--;
+    curorder--;
 
     page_t *buddy_page = pmem_get_page(first_page->phys_addr ^ 
-                                       (PAGE_SIZE << order));
+                                       (PAGE_SIZE << curorder));
 
     if (buddy_page != NULL) {
-      buddy_page->order = order;
-      freelist_push(&freelists[order], buddy_page);
+      buddy_page->order = curorder;
+      freelist_push(&freelists[curorder], buddy_page);
     }
     
-    first_page->order = order;
-    freelist_push(&freelists[order], first_page);
+    first_page->order = curorder;
+    freelist_push(&freelists[curorder], first_page);
   }
 
   // get first available page

@@ -43,7 +43,7 @@ int get_slab_order(size_t size) {
 slab_t *slab_alloc(uint_fast8_t order) {
   // allocate a new page for this slab
   // XXX dont allocate highmem page? (on 32-bit machines)
-  page_t *page = pmem_alloc();
+  page_t *page = pmem_alloc(0);
   if (page == NULL) {
     return NULL;
   }
@@ -128,6 +128,6 @@ void kfree(void *buf) {
   // deallocate slab if empty
   if (--slab->num_inuse == 0) {
     SLAB_FREELIST(slab->order) = slab->next_free;
-    pmem_free(pmem_get_page(VA(slab)));
+    pmem_free(pmem_get_page(VA(slab)), 0);
   }
 }

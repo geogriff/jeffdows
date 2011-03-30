@@ -55,7 +55,7 @@ void init_mem() {
       if (phys_addr > VA(&_end)
 	  && !(phys_addr + PAGE_SIZE >= VA(pmem_pages)
 	       && phys_addr < VA(&pmem_pages[pmem_page_count]))) {
-	pmem_free(pmem_get_page(phys_addr));
+	pmem_free(pmem_get_page(phys_addr), 0);
       }
     }
     pmem_page_idx += mmap->limit / PAGE_SIZE;

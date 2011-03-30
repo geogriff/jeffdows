@@ -34,7 +34,7 @@ void freelist_push(page_t **freelist, page_t *page);
 page_t *freelist_pop(page_t **freelist);
 page_t *pmem_get_page(phys_addr_t phys_addr);
 pmem_segment_t *pmem_get_seg(phys_addr_t phys_addr);
-void pmem_free(page_t *page);
-page_t *pmem_alloc();
+void pmem_free(page_t *page, int order);
+page_t *pmem_alloc(int order);
 
 #endif /* _MEM_PMEM_H */
