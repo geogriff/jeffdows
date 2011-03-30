@@ -2,11 +2,10 @@
 #include <mem/segment.h>
 #include <mem/page.h>
 #include <core/asm.h>
-#include <init/interrupt.h>
 #include <init/init.h>
+#include <init/interrupt.h>
 #include <interrupt.h>
 #include <boot/multiboot.h>
-#include "init.h"
 
 segment_descriptor_t gdt[] ALIGN(8) = {
   { // null descriptor
@@ -99,7 +98,7 @@ void init_x86(multiboot_info_t *multiboot_info) {
   // set up gdt
   pseudo_segment_descriptor_t gdtd = {
     .limit = (sizeof(gdt) - 1),
-    .base = (unsigned) &gdt
+    .base = (uint32_t) &gdt
   };
   set_gdt(&gdtd);
 
@@ -107,7 +106,7 @@ void init_x86(multiboot_info_t *multiboot_info) {
   pde_nonpresent_t nonpresent_page = {
     .present = 0       // present
   };
-  for (int i = 0; i < (KERNEL_BASE>>22); i++)
+  for (uint_fast16_t i = 0; i < (KERNEL_BASE>>22); i++)
     page_dir[i].nonpresent = nonpresent_page;
 
   // map first 1GB of physical memory to KERNEL_BASE
@@ -125,7 +124,7 @@ void init_x86(multiboot_info_t *multiboot_info) {
     .writable = 1,
     .present = 1
   };
-  for (int i = 0; i < 1024; i++, kernel_page.base_addr++)
+  for (uint_fast16_t i = 0; i < 1024; i++, kernel_page.base_addr++)
     page_dir[kernel_page.base_addr + (KERNEL_BASE>>22)].bigpage = kernel_page;
 
   init_interrupts();
