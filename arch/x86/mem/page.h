@@ -4,7 +4,8 @@
 // base virtual address to kernel pages (mapped to physical address 0x00000000) 
 #define KERNEL_BASE 0xC0000000
 
-#define PA(x) ((void *) (KERNEL_BASE + (x)))
+#define PA(x) (((void *) x) + KERNEL_BASE)
+#define VA(x) (((void *) x) - KERNEL_BASE)
 
 #define PAGE_SIZE 4096
 #define PAGE_FLOOR(x) ((x) & ~(PAGE_SIZE - 1))
