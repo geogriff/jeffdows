@@ -1,7 +1,7 @@
 #include <core/printf.h>
 #include <mem/segment.h>
 #include <mem/page.h>
-#include <init/asm.h>
+#include <core/asm.h>
 #include <init/interrupt.h>
 #include <init/init.h>
 #include <interrupt.h>

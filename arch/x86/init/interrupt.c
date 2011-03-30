@@ -1,5 +1,5 @@
 #include <mem/segment.h>
-#include <init/asm.h>
+#include <core/asm.h>
 #include <core/trap_entry.h>
 #include <interrupt.h>
 
