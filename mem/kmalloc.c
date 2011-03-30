@@ -17,8 +17,9 @@ typedef struct slab_buffer {
 typedef struct slab {
   struct slab *next_free;
   slab_buffer_t *buffer_freelist;
-  int order;
-  unsigned int kmalloc_times;
+  uint_fast8_t order;
+  unsigned short num_inuse;
+  unsigned int alloc_times;
   slab_buffer_t first_buffer[];
 } slab_t;
 
@@ -39,7 +40,7 @@ int get_slab_order(size_t size) {
     : SLAB_ORDER_MIN;
 }
 
-slab_t *slab_alloc(int order) {
+slab_t *slab_alloc(uint_fast8_t order) {
   // allocate a new page for this slab
   // XXX dont allocate highmem page? (on 32-bit machines)
   page_t *page = pmem_alloc();
@@ -50,7 +51,8 @@ slab_t *slab_alloc(int order) {
   slab_t *slab = PA(page->phys_addr);
   // initialize the slab
   slab->order = order;
-  slab->kmalloc_times = 0;
+  slab->num_inuse = 0;
+  slab->alloc_times = 0;
   // add as many buffers to freelist as will fit in the page
   slab->buffer_freelist = slab->first_buffer;
   slab_buffer_t *buffer;
@@ -88,6 +90,8 @@ void *kmalloc(size_t size) {
   // allocate a buffer from the slab
   slab_buffer_t *buffer = slab->buffer_freelist;
   slab->buffer_freelist = buffer->next_free;
+  slab->num_inuse++;
+  slab->alloc_times++;
 
   // remove slab from freelist if it is now full
   if (slab->buffer_freelist == NULL) {
@@ -116,11 +120,14 @@ void kfree(void *buf) {
   slab->buffer_freelist = buffer;
 
   // add slab to freelist if it was previously full
-  // XXX add to end of freelist to improve performance?
   if (buffer->next_free == NULL) {
     slab->next_free = SLAB_FREELIST(slab->order);
     SLAB_FREELIST(slab->order) = slab;
   }
 
-  // XXX deallocate slab if it becomes empty
+  // deallocate slab if empty
+  if (--slab->num_inuse == 0) {
+    SLAB_FREELIST(slab->order) = slab->next_free;
+    pmem_free(pmem_get_page(VA(slab)));
+  }
 }
