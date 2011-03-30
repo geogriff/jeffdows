@@ -5,31 +5,39 @@
 
 #include "init.h"
 
+struct kmalloc_test_buf {
+  struct kmalloc_test_buf *next;
+  char text[];
+};
+
 void main() {
   puts("booting OS................\n");
   init();
 
+  struct kmalloc_test_buf *bufs;
   bool alloc_failed = false;
-  for (int limit = 1458; !alloc_failed; limit++) {
-    char *bufs[limit];
-    for (int i = 0; i < limit; i++) {
-      bufs[i] = kmalloc(sizeof(char) * (i + 1));
-      if (bufs[i] == NULL) {
-	puts("allbreak ocation failed!");
+  while (!alloc_failed) {
+    for (size_t size = 16; size <= 2048; size *= 2) {
+      struct kmalloc_test_buf *buf = kmalloc(size);
+      if (buf == NULL) {
+	puts("allocation failed!");
 	alloc_failed = true;
 	break;
       }
+      buf->next = bufs;
+      bufs = buf;
 
-      for (int j = 0; j < i; j++) {
-	bufs[i][j] = 'a' + (j % ('z' - 'a' + 1));
+      int text_size = (size - sizeof(struct kmalloc_test_buf)) / sizeof(char);
+      for (int j = 0; j < text_size - 1; j++) {
+	buf->text[j] = 'a' + (j % ('z' - 'a' + 1));
       }
-      bufs[i][i] = 0;
+      buf->text[text_size - 1] = 0;
     }
-    for (int i = 0; i < limit; i++) {
-      if (bufs[i] == NULL) {
-	break;
-      }
-      kfree(bufs[i]);
-    }
+  }
+  // free all buffers
+  while (bufs != NULL) {
+    struct kmalloc_test_buf *buf = bufs;
+    bufs = bufs->next;
+    kfree(buf);
   }
 }
