@@ -36,9 +36,15 @@ page_t *freelist_pop(page_t **freelist) {
 
 page_t *pmem_get_page(phys_addr_t phys_addr) {
   for (pmem_segment_t *seg = &pmem_segments[0]; 
-       seg < &pmem_segments[pmem_segment_count]; seg++)
-    if (phys_addr >= seg->start && phys_addr < seg->start + seg->limit)
-      return &seg->pages[(phys_addr - seg->start) / PAGE_SIZE];
+       seg < &pmem_segments[pmem_segment_count]; seg++) {
+    if (phys_addr >= seg->start && phys_addr < seg->start + seg->limit) {
+      if (phys_addr + PAGE_SIZE <= seg->start + seg->limit) {
+	return &seg->pages[(phys_addr - seg->start) / PAGE_SIZE];
+      } else {
+	break;
+      }
+    }
+  }
 
   return NULL;
 }

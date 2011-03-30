@@ -37,7 +37,8 @@ void init_mem() {
     //panic
   }
 
-  // initialize page data
+  /* initialize page data. initially, the pages' phys_addrs will be NULL, 
+     making them invalid until they get initialized below */
   memset(pmem_pages, 0, pmem_data_size);
 
   int pmem_page_idx = 0;
@@ -45,7 +46,9 @@ void init_mem() {
        mmap < &boot_info.phys_mmap[boot_info.phys_mmap_count]; mmap++) {
     init_pmem_segment(mmap, &pmem_pages[pmem_page_idx]);
     for (phys_addr_t phys_addr = mmap->start;
-         phys_addr < mmap->start + mmap->limit; phys_addr += PAGE_SIZE) {
+         phys_addr + PAGE_SIZE <= mmap->start + mmap->limit; 
+	 phys_addr += PAGE_SIZE) {
+      // initialize the page (it will be marked as in use)
       init_pmem_page(phys_addr);
 
       // free anything after kernel code that is not used to store struct pages
