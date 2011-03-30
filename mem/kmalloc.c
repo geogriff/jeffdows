@@ -3,28 +3,29 @@
 #include <stddef.h>
 #include <stdint.h>
 
-struct buffer {
-  struct buffer *next_free;
+typedef struct slab_buffer {
+  struct slab_buffer *next_free;
   char buf[];
-};
+} slab_buffer_t;
 
-#define BUFFER_SIZE(order) (sizeof(struct buffer) + ((2 << order) >> 1))
-#define BUF_BUFFER(buf) ((struct buffer *) \
-			 ((void *) buf - sizeof(struct buffer)))
-#define BUFFER_SLAB(buf) ((struct slab *) PAGE_FLOOR((uintptr_t) buf))
+#define SLAB_BUFFER_SIZE(order) \
+  (sizeof(slab_buffer_t) + ((2 << order) >> 1))
+#define BUF_SLAB_BUFFER(buf) \
+  ((slab_buffer_t *) ((void *) buf - sizeof(slab_buffer_t)))
+#define SLAB_BUFFER_SLAB(buf) ((slab_t *) PAGE_FLOOR((uintptr_t) buf))
 
-struct slab {
+typedef struct slab {
   struct slab *next_free;
-  struct buffer *buffer_freelist;
+  slab_buffer_t *buffer_freelist;
   int order;
   unsigned int kmalloc_times;
-  struct buffer first_buffer[];
-};
+  slab_buffer_t first_buffer[];
+} slab_t;
 
 #define SLAB_ORDER_MIN 4
 #define SLAB_ORDER_MAX 11
 
-struct slab *slab_freelists[] = {
+slab_t *slab_freelists[] = {
   NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
 };
 
@@ -38,7 +39,7 @@ int get_slab_order(size_t size) {
     : SLAB_ORDER_MIN;
 }
 
-struct slab *slab_alloc(int order) {
+slab_t *slab_alloc(int order) {
   // allocate a new page for this slab
   // XXX dont allocate highmem page? (on 32-bit machines)
   page_t *page = pmem_alloc();
@@ -46,18 +47,18 @@ struct slab *slab_alloc(int order) {
     return NULL;
   }
 
-  struct slab *slab = PA(page->phys_addr);
+  slab_t *slab = PA(page->phys_addr);
   // initialize the slab
   slab->order = order;
   slab->kmalloc_times = 0;
   // add as many buffers to freelist as will fit in the page
   slab->buffer_freelist = slab->first_buffer;
-  struct buffer *buffer;
+  slab_buffer_t *buffer;
   for (buffer = slab->first_buffer; 
-       ((void *) buffer) + 2 * BUFFER_SIZE(order)
+       ((void *) buffer) + 2 * SLAB_BUFFER_SIZE(order)
 	 < ((void *) slab) + PAGE_SIZE;
        buffer = buffer->next_free) {
-    buffer->next_free = ((void *) buffer + BUFFER_SIZE(order));
+    buffer->next_free = ((void *) buffer + SLAB_BUFFER_SIZE(order));
   }
   buffer->next_free = NULL;
 
@@ -72,7 +73,7 @@ void *kmalloc(size_t size) {
   }
 
   // XXX disable interrupts
-  struct slab *slab = SLAB_FREELIST(order);
+  slab_t *slab = SLAB_FREELIST(order);
   if (slab == NULL) {
     // allocate a new slab
     // XXX enable interrupts again during slab_alloc
@@ -85,7 +86,7 @@ void *kmalloc(size_t size) {
     SLAB_FREELIST(order) = slab;
   }
   // allocate a buffer from the slab
-  struct buffer *buffer = slab->buffer_freelist;
+  slab_buffer_t *buffer = slab->buffer_freelist;
   slab->buffer_freelist = buffer->next_free;
 
   // remove slab from freelist if it is now full
@@ -101,8 +102,8 @@ void *kmalloc(size_t size) {
 
 void kfree(void *buf) {
   // XXX disable interrupts
-  struct buffer *buffer = BUF_BUFFER(buf);
-  struct slab *slab = BUFFER_SLAB(buffer);
+  slab_buffer_t *buffer = BUF_SLAB_BUFFER(buf);
+  slab_t *slab = SLAB_BUFFER_SLAB(buffer);
 
   if (buffer->next_free != NULL) {
     // double free
