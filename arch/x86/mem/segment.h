@@ -1,8 +1,6 @@
 #ifndef _SEGMENT_H
 #define _SEGMENT_H
 
-#include <compiler.h>
-
 // boot-time GDT indices
 #define BOOT_NULL_IDX   0
 #define BOOT_CS_IDX     1
@@ -26,9 +24,14 @@
 
 #ifndef __ASM__
 
+#include <stdbool.h>
+#include <stdint.h>
+#include <compiler.h>
+
 /* IMPORTANT!! the ordering of these bits in each byte is a compiler choice!
    currently, these structs are written the gcc way, which is least significant
-   bit first (on little endian machines). note that byte ordering is the same */
+   bit first (on little endian machines). note that byte ordering is the
+   same */
 
 // descriptor types
 typedef enum descriptor_type {
@@ -70,35 +73,35 @@ typedef enum dpl {
 } dpl_t;
 
 typedef struct segment_descriptor {
-  unsigned limit_low:16;        // segment limit (low 16 bits)
-  unsigned base_low:24;         // segment base address (low 24 bits)
+  uint16_t limit_low:16;        // segment limit (low 16 bits)
+  uint32_t base_low:24;         // segment base address (low 24 bits)
   descriptor_type_t type:5;     // descriptor type
   dpl_t dpl:2;                  // descriptor privilege level
-  unsigned present:1;           // segment present in memory
-  unsigned limit_high:4;        // segment limit (high 4 bits)
-  unsigned :1;                  // unused
-  unsigned reserved:1;          // reserved (should be 0)
-  unsigned big:1;               // this is usage in DS, usage in CS is "default"
-  unsigned granularity:1;       // 4kb granularity for segment limit
-  unsigned base_high:8;         // segment base address (high 8 bits)
+  bool present:1;               // segment present in memory
+  uint8_t limit_high:4;         // segment limit (high 4 bits)
+  bool :1;                      // unused
+  bool reserved:1;              // reserved (should be 0)
+  bool big:1;                   // this is usage in DS, usage in CS is "default"
+  bool granularity:1;           // 4kb granularity for segment limit
+  uint8_t base_high:8;          // segment base address (high 8 bits)
 } PACK segment_descriptor_t;
 
 typedef struct gate_descriptor {
-  unsigned off_low:16;          // gate segment offset (low 16 bits)
-  unsigned segment:16;          // gate segment number
-  unsigned param_count:5;       // number of word-sized parameters of gate
-  unsigned reserved:3;          // reserved (should be 0)
+  uint16_t off_low:16;          // gate segment offset (low 16 bits)
+  uint16_t segment:16;          // gate segment number
+  uint8_t param_count:5;        // number of word-sized parameters of gate
+  uint8_t reserved:3;           // reserved (should be 0)
   descriptor_type_t type:5;     // descriptor type
   dpl_t dpl:2;                  // descriptor privelege level
-  unsigned present:1;           // gate present in memory
-  unsigned off_high:16;         // segment offset of gate (high 16 bits)
+  bool present:1;               // gate present in memory
+  uint16_t off_high:16;         // segment offset of gate (high 16 bits)
 } PACK gate_descriptor_t;
 
 typedef struct nonpresent_descriptor {
-  unsigned :32;
-  unsigned :15;
-  unsigned present:1;
-  unsigned :16;
+  uint32_t :32;
+  uint16_t :15;
+  bool present:1;
+  uint32_t :16;
 } PACK nonpresent_descriptor_t;
 
 typedef union descriptor {
@@ -109,8 +112,8 @@ typedef union descriptor {
 
 // dont use bitfield here, or PACK will not align 'base' properly
 typedef struct pseudo_segment_descriptor {
-  unsigned short limit;         // descriptor limit
-  unsigned long base;           // descriptor base address
+  uint16_t limit;         // descriptor limit
+  uint32_t base;          // descriptor base address
 } PACK pseudo_segment_descriptor_t;
 
 #endif /* __ASM__ */
