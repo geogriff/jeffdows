@@ -42,6 +42,10 @@ struct slab *slab_alloc(int order) {
   // allocate a new page for this slab
   // XXX dont allocate highmem page? (on 32-bit machines)
   page_t *page = pmem_alloc();
+  if (page == NULL) {
+    return NULL;
+  }
+
   struct slab *slab = PA(page->phys_addr);
   // initialize the slab
   slab->order = order;
@@ -73,6 +77,9 @@ void *kmalloc(size_t size) {
     // allocate a new slab
     // XXX enable interrupts again during slab_alloc
     slab = slab_alloc(order);
+    if (slab == NULL) {
+      return NULL;
+    }
     // add slab to global freelist
     slab->next_free = SLAB_FREELIST(order);
     SLAB_FREELIST(order) = slab;

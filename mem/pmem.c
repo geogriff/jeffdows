@@ -94,7 +94,7 @@ page_t *pmem_alloc() {
   while (freelists[order] == NULL) {
     order++;
     if (order > MAX_PAGE_ORDER) {
-      // panic - out of memory
+      return NULL;
     }
   }
 
