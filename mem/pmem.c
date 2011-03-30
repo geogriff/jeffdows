@@ -58,6 +58,19 @@ pmem_segment_t *pmem_get_seg(phys_addr_t phys_addr) {
   return NULL;
 }
 
+page_t *pmem_get_buddy(page_t *page) {
+  page_t *buddy = pmem_get_page(page->phys_addr ^ (PAGE_SIZE << page->order));
+  pmem_segment_t *seg = pmem_get_seg(page->phys_addr);
+
+  if (buddy != NULL
+      && buddy->phys_addr >= seg->start
+      && buddy->phys_addr < seg->start + seg->limit) {
+    return buddy;
+  }
+
+  return NULL;
+}
+
 void pmem_free(page_t *page, int order) {
   pmem_segment_t *seg = pmem_get_seg(page->phys_addr);
 
@@ -67,12 +80,9 @@ void pmem_free(page_t *page, int order) {
 
   // merge with other pages as much as possible
   page_t *buddy;
-  while (page->order < MAX_PAGE_ORDER && 
-         ((buddy = pmem_get_page(page->phys_addr ^ (PAGE_SIZE << page->order)))
-	  != NULL) && 
-         buddy->phys_addr >= seg->start &&
-         buddy->phys_addr < seg->start + seg->limit &&
-         buddy->order == page->order) {
+  while (page->order < MAX_PAGE_ORDER
+         && (buddy = pmem_get_buddy(page)) != NULL
+         && buddy->order == page->order) {
     // remove pages from freelist
     freelist_remove(&freelists[page->order], page);
     freelist_remove(&freelists[page->order], buddy);
@@ -105,20 +115,17 @@ page_t *pmem_alloc(int order) {
 
   // split free areas until we have a single page
   while (curorder > order) {
-    page_t *first_page = freelist_pop(&freelists[curorder]);
+    page_t *page = freelist_pop(&freelists[curorder]);
 
-    curorder--;
+    // demote the first available page in the freelist
+    curorder--;    
+    page->order = curorder;
+    freelist_push(&freelists[curorder], page);
 
-    page_t *buddy_page = pmem_get_page(first_page->phys_addr ^ 
-                                       (PAGE_SIZE << curorder));
-
-    if (buddy_page != NULL) {
-      buddy_page->order = curorder;
-      freelist_push(&freelists[curorder], buddy_page);
-    }
-    
-    first_page->order = curorder;
-    freelist_push(&freelists[curorder], first_page);
+    // also demote the buddy page
+    page_t *buddy = pmem_get_buddy(page);
+    buddy->order = curorder;
+    freelist_push(&freelists[curorder], buddy);
   }
 
   // get first available page
