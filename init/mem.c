@@ -2,6 +2,7 @@
 #include <init/pmem.h>
 #include <mem/page.h>
 #include <mem/pmem.h>
+#include <core/asm.h>
 #include <stddef.h>
 #include <string.h>
 
@@ -46,7 +47,13 @@ void init_mem() {
     for (phys_addr_t phys_addr = mmap->start;
          phys_addr < mmap->start + mmap->limit; phys_addr += PAGE_SIZE) {
       init_pmem_page(phys_addr);
-      pmem_free(pmem_get_page(phys_addr));
+
+      // free anything after kernel code that is not used to store struct pages
+      if (phys_addr > VA(&_end)
+	  && !(phys_addr + PAGE_SIZE >= VA(pmem_pages)
+	       && phys_addr < VA(&pmem_pages[pmem_page_count]))) {
+	pmem_free(pmem_get_page(phys_addr));
+      }
     }
     pmem_page_idx += mmap->limit / PAGE_SIZE;
   }
