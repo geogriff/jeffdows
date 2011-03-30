@@ -72,8 +72,6 @@ page_t *pmem_get_buddy(page_t *page) {
 }
 
 void pmem_free(page_t *page, int order) {
-  pmem_segment_t *seg = pmem_get_seg(page->phys_addr);
-
   // mark page as free and put on freelist
   page->order = order;
   freelist_push(&freelists[page->order], page);
