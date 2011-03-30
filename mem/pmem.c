@@ -71,7 +71,7 @@ page_t *pmem_get_buddy(page_t *page) {
   return NULL;
 }
 
-void pmem_free(page_t *page, int order) {
+void pmem_free(page_t *page, uint_fast8_t order) {
   // mark page as free and put on freelist
   page->order = order;
   freelist_push(&freelists[page->order], page);
@@ -100,8 +100,8 @@ void pmem_free(page_t *page, int order) {
   }
 }
 
-page_t *pmem_alloc(int order) {
-  int curorder = order;
+page_t *pmem_alloc(uint_fast8_t order) {
+  uint_fast8_t curorder = order;
 
   // find lowest order freelist with available pages
   while (freelists[curorder] == NULL) {
