@@ -2,6 +2,7 @@
 #define _MEM_PMEM_H
 
 #include <types.h>
+#include <stddef.h>
 
 #define MAX_PMEM_SEGMENTS 128
 #define MAX_PAGE_ORDER 12
