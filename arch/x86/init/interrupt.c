@@ -15,7 +15,7 @@ void set_isr(interrupt_vector_t vector, descriptor_type_t type, dpl_t dpl,
     .reserved = 0,
     .param_count = 0,
     .segment = KERNEL_CS,
-    .off_low = entry
+    .off_low = (uint32_t) entry
   };
   idt[vector].gate = gate;
 }
