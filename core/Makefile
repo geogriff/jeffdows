@@ -4,5 +4,5 @@ all: all.o
 clean:
 	rm *.o
 
-all.o: kprintf.o string.o trap.o trap_entry.o asm.o
+all.o: kprintf.o ctype.o stdlib.o
 	$(LD) $(LDFLAGS) -o $@ $^

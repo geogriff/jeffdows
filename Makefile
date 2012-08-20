@@ -21,7 +21,7 @@ include arch/$(ARCH)/Makefile
 
 # add machine independent dirs
 init-o += init/
-core-o += mem/
+core-o += mem/ core/
 
 # src directories
 kernel-dirs := $(filter %/, $(init-o) $(core-o))

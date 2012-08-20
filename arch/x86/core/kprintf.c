@@ -1,6 +1,6 @@
 #include <stdint.h>
 #include <mem/page.h>
-#include "printf.h"
+#include "kprintf.h"
 
 #define VGA_BASE (KERNEL_BASE+0xB8000)
 
@@ -30,10 +30,4 @@ void putchar(char c) {
     if (++vga_xpos >= vga_cols)
       putchar('\n');
   }
-}
-
-void puts(char *str) {
-  while (*str != 0)
-    putchar(*str++);
-  putchar('\n');
 }

@@ -1,6 +1,6 @@
 #include <interrupt.h>
 #include <mem/segment.h>
-#include <core/printf.h>
+#include <core/kprintf.h>
 
 void trap_handler(interrupt_vector_t vector, trap_error_code_t error, 
                   trapped_state_t *state) {

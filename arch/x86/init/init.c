@@ -1,4 +1,4 @@
-#include <core/printf.h>
+#include <core/kprintf.h>
 #include <mem/segment.h>
 #include <mem/page.h>
 #include <core/asm.h>

@@ -1,4 +1,4 @@
-#include <core/printf.h>
+#include <core/kprintf.h>
 #include <mem/kmalloc.h>
 #include <stddef.h>
 #include <stdbool.h>
@@ -11,7 +11,7 @@ struct kmalloc_test_buf {
 };
 
 void main() {
-  puts("booting OS................\n");
+  kprintf("booting OS................\n");
   init();
 
   for (size_t size = 16; size <= 2048; size *= 2) {
@@ -19,7 +19,7 @@ void main() {
     while (true) {
       struct kmalloc_test_buf *buf = kmalloc(size);
       if (buf == NULL) {
-	puts("allocation failed!");
+	kprintf("allocation failed!");
 	break;
       }
       buf->next = bufs;
